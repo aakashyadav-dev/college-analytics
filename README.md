@@ -49,9 +49,9 @@ college-analytics/
 
 ### 1️⃣ Clone the repository
 # Run backend server
-Cd backend
-npm install 
-npm run dev
+-- Cd backend
+-- npm install 
+-- npm run dev
 
 # Run frontend server
   npm start

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Analytics Dashboard</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 Advanced College Analytics</h1>
+            <div class="header-actions">
+                <button id="refreshBtn" class="btn-secondary">🔄 Refresh</button>
+                <button id="addCollegeBtn" class="btn-primary">➕ Add College</button>
+            </div>
+        </header>
+
+        <!-- Advanced Filters -->
+        <div class="filters-section">
+            <div class="filter-group">
+                <label for="countryFilter">Filter by Country:</label>
+                <select id="countryFilter">
+                    <option value="">All Countries</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="degreeFilter">Filter by Degree:</label>
+                <select id="degreeFilter">
+                    <option value="">All Degrees</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="typeFilter">Filter by Type:</label>
+                <select id="typeFilter">
+                    <option value="">All Types</option>
+                    <option value="Engineering">Engineering</option>
+                    <option value="Medical">Medical</option>
+                    <option value="Law">Law</option>
+                    <option value="Arts">Arts</option>
+                    <option value="Science">Science</option>
+                    <option value="Business">Business</option>
+                </select>
+            </div>
+            <button id="applyFilters" class="btn-primary">Apply Filters</button>
+            <button id="clearFilters" class="btn-secondary">Clear</button>
+        </div>
+
+        <!-- Statistics Overview -->
+        <div class="stats-overview" id="statsOverview">
+            <div class="stat-card">
+                <h3>Total Colleges</h3>
+                <p id="totalCollegesCount">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Students</h3>
+                <p id="totalStudentsCount">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Average Rating</h3>
+                <p id="avgRatingValue">0.0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Countries</h3>
+                <p id="countriesCount">0</p>
+            </div>
+        </div>
+
+        <!-- Multi-level Visualization -->
+        <div class="visualization-container">
+            <!-- Level 1: College Types -->
+            <div class="chart-level active" id="level1">
+                <h2>📊 College Distribution by Type</h2>
+                <div class="chart-container">
+                    <canvas id="collegeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Level 2: Degree Levels -->
+            <div class="chart-level" id="level2">
+                <h2>🎓 Degree Programs in <span id="selectedType"></span></h2>
+                <div class="back-nav">
+                    <button class="back-btn" onclick="app.backToLevel(1)">← Back to Types</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="degreeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Level 3: Courses -->
+            <div class="chart-level" id="level3">
+                <h2>📚 Courses for <span id="selectedDegree"></span> in <span id="selectedType2"></span></h2>
+                <div class="back-nav">
+                    <button class="back-btn" onclick="app.backToLevel(2)">← Back to Degrees</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="courseChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Country Visualization -->
+            <div class="chart-level" id="levelCountry">
+                <h2>🌍 Colleges in <span id="selectedCountry"></span></h2>
+                <div class="back-nav">
+                    <button class="back-btn" onclick="app.backToLevel(1)">← Back to Main</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="countryChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- College Details Section -->
+        <div class="details-section">
+            <div class="section-header">
+                <h2 id="collegeTypeTitle">🎯 College Details</h2>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search colleges by name, location, country...">
+                    <button id="searchBtn" class="btn-secondary">🔍 Search</button>
+                </div>
+            </div>
+            <div id="collegeDetails" class="college-details">
+                <div class="placeholder">
+                    <p>Select a college type, country, or use search to view college details</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add College Modal -->
+        <div id="addCollegeModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Add New College</h2>
+                <form id="collegeForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="collegeName">College Name:</label>
+                            <input type="text" id="collegeName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="collegeType">College Type:</label>
+                            <select id="collegeType" required>
+                                <option value="">Select Type</option>
+                                <option value="Engineering">Engineering</option>
+                                <option value="Medical">Medical</option>
+                                <option value="Law">Law</option>
+                                <option value="Arts">Arts</option>
+                                <option value="Science">Science</option>
+                                <option value="Business">Business</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="collegeCountry">Country:</label>
+                            <input type="text" id="collegeCountry" required placeholder="e.g., India, USA, UK">
+                        </div>
+                        <div class="form-group">
+                            <label for="collegeLocation">Location:</label>
+                            <input type="text" id="collegeLocation" required placeholder="City, State">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="collegeEstablishedYear">Established Year:</label>
+                            <input type="number" id="collegeEstablishedYear" min="1800" max="2024" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="collegeTotalStudents">Total Students:</label>
+                            <input type="number" id="collegeTotalStudents" min="1" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="collegeRating">Rating (0-5):</label>
+                            <input type="number" id="collegeRating" min="0" max="5" step="0.1" required>
+                        </div>
+                    </div>
+
+                    <!-- Course Information -->
+                    <div class="form-section">
+                        <h3>Course Information</h3>
+                        <div id="coursesContainer">
+                            <div class="course-entry">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Course Name:</label>
+                                        <input type="text" class="courseName" placeholder="e.g., Computer Science">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Degree Level:</label>
+                                        <select class="courseLevel">
+                                            <option value="">Select Level</option>
+                                            <option value="B.Tech">B.Tech</option>
+                                            <option value="M.Tech">M.Tech</option>
+                                            <option value="MBA">MBA</option>
+                                            <option value="MBBS">MBBS</option>
+                                            <option value="B.Sc">B.Sc</option>
+                                            <option value="M.Sc">M.Sc</option>
+                                            <option value="B.A">B.A</option>
+                                            <option value="M.A">M.A</option>
+                                            <option value="LLB">LLB</option>
+                                            <option value="LLM">LLM</option>
+                                            <option value="PhD">PhD</option>
+                                            <option value="Diploma">Diploma</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Duration:</label>
+                                        <input type="text" class="courseDuration" placeholder="e.g., 4 years">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Seats:</label>
+                                        <input type="number" class="courseSeats" placeholder="Number of seats">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" id="addCourse" class="btn-secondary">+ Add Another Course</button>
+                    </div>
+
+                    <!-- Contact Information -->
+                    <div class="form-section">
+                        <h3>Contact Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="collegeEmail">Email:</label>
+                                <input type="email" id="collegeEmail" placeholder="college@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="collegeWebsite">Website:</label>
+                                <input type="url" id="collegeWebsite" placeholder="https://example.com">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="collegePhone">Phone:</label>
+                                <input type="tel" id="collegePhone" placeholder="+1-234-567-8900">
+                            </div>
+                            <div class="form-group">
+                                <label for="collegeFacilities">Facilities (comma separated):</label>
+                                <input type="text" id="collegeFacilities" placeholder="Library, Hostel, Sports, Labs">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="collegeDescription">Description:</label>
+                        <textarea id="collegeDescription" rows="3" maxlength="500" placeholder="Brief description of the college..."></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" id="cancelBtn" class="btn-secondary">Cancel</button>
+                        <button type="submit" class="btn-primary">Add College</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
